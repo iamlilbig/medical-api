@@ -11,7 +11,8 @@
         "kavenegar/php": "^1.2",
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.13",
-        "laravel/tinker": "^2.5"
+        "laravel/tinker": "^2.5",
+        "melipayamak/laravel": "1.0.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

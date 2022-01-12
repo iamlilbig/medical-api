@@ -4,11 +4,14 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Exceptions\v1\CredentialsNotConfirmed;
 use App\Exceptions\v1\CredentialsNotConfirmedException;
+use App\Exceptions\v1\TokenNotExistsException;
+use App\Exceptions\v1\UserNotExistsException;
 use App\Exceptions\v1\WrongRegisterCodeException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\ConfirmPhoneRequest;
 use App\Http\Requests\v1\LoginRequest;
 use App\Http\Requests\v1\RegisterRequest;
+use App\Http\Requests\v1\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -85,5 +88,71 @@ class UserController extends Controller
         throw new WrongRegisterCodeException();
     }
 
+    /**
+     * @throws TokenNotExistsException
+     */
+    public function tokenDelete(Request $request)
+    {
+        $user = auth()->user();
+        if($user->tokens()->delete()){
+            $token = $user->createToken($request->getClientIp())->plainTextToken;
+            return response()->json([
+                'massage' => 'با موفقیت حذف شد.توکن جدید ارسال شد' ,
+                'data'=>[
+                    'token' => $token
+                ],
+                'status' => 200
+            ],Response::HTTP_OK);
+        }
+        throw new TokenNotExistsException();
+    }
+
+    /**
+     * @throws UserNotExistsException
+     */
+    public function destroy()
+    {
+        if(auth()->user()->delete()){
+            return response()->json([
+                'massage' => 'با موفقیت حذف شد',
+                'status' => 200
+            ], Response::HTTP_OK);
+        }
+        throw new UserNotExistsException();
+    }
+
+    /**
+     * @throws UserNotExistsException
+     */
+    public function update(UserRequest $request)
+    {
+        $user = auth()->user()->first();
+        if(!($user === null)){
+            $validData = toSnakeCase($request->all());
+            if(isset($validData['password'])){
+                $validData['password'] = Hash::make($validData['password']);
+            }
+            $user->update($validData);
+            return response()->json([
+                'massage' => 'با موفقیت به روز شد' ,
+                'data' => new \App\Http\Resources\v1\User($user),
+                'status' => 200
+            ],Response::HTTP_OK);
+        }
+        throw new UserNotExistsException();
+    }
+
+    public function show()
+    {
+        $user = auth()->user()->first();
+        if(!($user === null)){
+            return response()->json([
+                'massage' => 'با موفقیت دریافت شد' ,
+                'data' => new \App\Http\Resources\v1\User($user),
+                'status' => 200
+            ],Response::HTTP_OK);
+        }
+        throw new UserNotExistsException();
+    }
 
 }

@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\api\v1\AttendantController;
 use App\Http\Controllers\api\v1\MedicalInformationController;
+use App\Http\Controllers\api\v1\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,33 +19,32 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function(){
     Route::post('login',[
-        \App\Http\Controllers\api\v1\UserController::class,'login'
+        UserController::class,'login'
     ]);
 
     Route::post('register',[
-        \App\Http\Controllers\api\v1\UserController::class,'register'
+        UserController::class,'register'
     ]);
+    Route::post('confirm-phone',[
+        UserController::class,'confirmPhone'
+    ])->middleware('auth:sanctum');
 
-    Route::middleware('auth:sanctum')->group(function(){
-        Route::post('confirm-phone',[
-            \App\Http\Controllers\api\v1\UserController::class,'confirmPhone'
-        ]);
-
+    Route::middleware(['auth:sanctum','phone.confirm'])->group(function(){
         Route::prefix('users')->group(function (){
-            Route::get('show',[
-                \App\Http\Controllers\api\v1\UserController::class,'show'
+            Route::get('/',[
+                UserController::class,'show'
             ]);
 
-            Route::put('update',[
-                \App\Http\Controllers\api\v1\UserController::class,'update'
+            Route::put('/',[
+                UserController::class,'update'
             ]);
 
-            Route::delete('tokens/delete',[
-                \App\Http\Controllers\api\v1\UserController::class,'tokenDelete'
+            Route::delete('tokens/',[
+                UserController::class,'tokenDelete'
             ]);
 
-            Route::delete('delete',[
-                \App\Http\Controllers\api\v1\UserController::class,'delete'
+            Route::delete('/',[
+                UserController::class,'destroy'
             ]);
 
             Route::prefix('medical-information')->group(function(){
@@ -63,6 +64,14 @@ Route::prefix('v1')->group(function(){
                     \App\Http\Controllers\api\v1\MedicalInformationController::class,'destroy'
                 ]);
             });
+            Route::apiResource('attendants', AttendantController::class);
+
+            Route::prefix('attendants')->group(function(){
+                Route::post('/{attendant}',[
+                    AttendantController::class,'sendSMS'
+                ]);
+            });
         });
+
     });
 });

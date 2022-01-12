@@ -14,6 +14,11 @@ class Attendant extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'relation' => $this->relation,
+            'name' => $this->name,
+            'phone' => $this->phone,
+        ];
     }
 }

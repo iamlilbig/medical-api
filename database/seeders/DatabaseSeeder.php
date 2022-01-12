@@ -16,5 +16,6 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         MassageType::query()->create(['massage_type'=>'register']);
+        MassageType::query()->create(['massage_type'=>'massage']);
     }
 }
