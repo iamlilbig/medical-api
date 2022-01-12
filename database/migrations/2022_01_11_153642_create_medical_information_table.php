@@ -15,7 +15,11 @@ class CreateMedicalInformationTable extends Migration
     {
         Schema::create('medical_information', function (Blueprint $table) {
             $table->id();
-            $table->boolean('special_Disease');
+            $table->unsignedBigInteger('user_id')->unique();
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
+            $table->boolean('special_disease');
             $table->boolean('diabetes');
             $table->boolean('blood_pressure');
             $table->boolean('kidney_failure');

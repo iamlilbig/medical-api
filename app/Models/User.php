@@ -46,4 +46,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(SMS::class);
     }
+
+    public function attendants()
+    {
+        return $this->hasMany(Attendant::class);
+    }
+
+    public function medicalInformation()
+    {
+        return $this->hasOne(MedicalInformation::class);
+    }
 }

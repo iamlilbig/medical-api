@@ -15,9 +15,13 @@ class CreateAttendantsTable extends Migration
     {
         Schema::create('attendants', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
             $table->string('relation');
             $table->string('name');
-            $table->string('phone_number');
+            $table->string('phone');
             $table->timestamps();
         });
     }
