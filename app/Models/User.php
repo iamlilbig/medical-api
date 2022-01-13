@@ -27,6 +27,8 @@ class User extends Authenticatable
         'birthday_date',
         'profile_case',
         'height',
+        'warning',
+        'banned_to',
     ];
 
     /**

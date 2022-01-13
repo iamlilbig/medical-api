@@ -16,8 +16,8 @@ class Attendant extends JsonResource
     {
         return [
             'id' => $this->id,
-            'relation' => $this->relation,
             'name' => $this->name,
+            'relation' => $this->relation,
             'phone' => $this->phone,
         ];
     }

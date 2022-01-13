@@ -27,9 +27,9 @@ Route::prefix('v1')->group(function(){
     ]);
     Route::post('confirm-phone',[
         UserController::class,'confirmPhone'
-    ])->middleware('auth:sanctum');
+    ])->middleware(['auth:sanctum','ban.detector']);
 
-    Route::middleware(['auth:sanctum','phone.confirm'])->group(function(){
+    Route::middleware(['auth:sanctum','phone.confirm','ban.detector'])->group(function(){
         Route::prefix('users')->group(function (){
             Route::get('/',[
                 UserController::class,'show'

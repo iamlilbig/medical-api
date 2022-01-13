@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\AttendantsRequest;
 use App\Http\Requests\v1\SMSRequest;
 use App\Http\Resources\v1\Attendant;
+use App\Http\Resources\v1\AttendantCollection;
 use App\Http\Resources\v1\MedicalInformation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,8 +24,7 @@ class AttendantController extends Controller
     public function sendSMS(SMSRequest $request, $id, KavenegarApi $kavenegar)
     {
         $user = auth()->user();
-        $attendant = $user->attendants()->find($id);
-        if($user->attendants()->find($id) != null){
+        if($attendant = $user->attendants()->find($id) != null){
             sendSMS($user,$attendant,$request->text,$kavenegar);
             return response()->json([
                 'massage' => 'با موفقیت ارسال شد',
@@ -33,14 +33,24 @@ class AttendantController extends Controller
         }
         throw new AttendantNotExistsException();
     }
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
+     * @throws AttendantNotExistsException
      */
     public function index()
     {
-        //
+        $attendants = auth()->user()->attendants()->get();
+       if($attendants->first() != null){
+           return response()->json([
+               'massage' => 'با موفقیت دریافت شد',
+               'data' => new AttendantCollection($attendants),
+               'status' => 200
+           ],Response::HTTP_OK);
+       }
+        throw new AttendantNotExistsException();
     }
 
     /**
@@ -68,12 +78,21 @@ class AttendantController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return JsonResponse
+     * @throws AttendantNotExistsException
      */
     public function show($id)
     {
-        //
+        $attendant = auth()->user()->attendants()->find($id);
+        if($attendant != null){
+            return response()->json([
+                'massage' => 'با موفقیت دریافت شد',
+                'data' => new Attendant($attendant),
+                'status' => 200
+            ],Response::HTTP_OK);
+        }
+        throw new AttendantNotExistsException();
     }
 
     /**

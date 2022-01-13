@@ -25,6 +25,8 @@ class CreateUsersTable extends Migration
             $table->enum('profile_case',['NORMAL','PERIOD','PREGNANCY'])->nullable();
             $table->integer('height')->nullable();
             $table->dateTime('phone_verified_at')->nullable();
+            $table->dateTime('banned_to')->nullable();
+            $table->integer('warning')->nullable();
             $table->timestamps();
         });
     }

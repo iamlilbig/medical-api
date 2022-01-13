@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api\v1;
 use App\Exceptions\v1\CredentialsNotConfirmed;
 use App\Exceptions\v1\CredentialsNotConfirmedException;
 use App\Exceptions\v1\TokenNotExistsException;
+use App\Exceptions\v1\UserIsBanException;
 use App\Exceptions\v1\UserNotExistsException;
 use App\Exceptions\v1\WrongRegisterCodeException;
 use App\Http\Controllers\Controller;
@@ -51,8 +52,8 @@ class UserController extends Controller
                 'status' => 200
             ],Response::HTTP_OK);
         }
-
-    throw new CredentialsNotConfirmedException();
+        $this->addWarning();
+        throw new CredentialsNotConfirmedException();
     }
 
     public function register(KavenegarApi $kavenegar,RegisterRequest $request)
@@ -73,6 +74,7 @@ class UserController extends Controller
 
     /**
      * @throws WrongRegisterCodeException
+     * @throws UserIsBanException
      */
     public function confirmPhone(ConfirmPhoneRequest $request)
     {
@@ -85,9 +87,26 @@ class UserController extends Controller
                 'status' => 200
             ],Response::HTTP_OK);
         }
+        $this->addWarning();
         throw new WrongRegisterCodeException();
     }
 
+
+    /**
+     * @throws UserIsBanException
+     */
+    public function addWarning()
+    {
+        $warnings = auth()->user()->warning +1;
+        if($warnings > 7){
+            \auth()->user()->update([
+                'warning' => 0,
+                'banned_to' => now()->addDay()
+            ]);
+            throw new UserIsBanException();
+        }
+        \auth()->user()->update(['warning'=>$warnings]);
+    }
     /**
      * @throws TokenNotExistsException
      */
