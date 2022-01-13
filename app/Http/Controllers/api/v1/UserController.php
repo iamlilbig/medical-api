@@ -8,6 +8,7 @@ use App\Exceptions\v1\TokenNotExistsException;
 use App\Exceptions\v1\UserIsBanException;
 use App\Exceptions\v1\UserNotExistsException;
 use App\Exceptions\v1\WrongRegisterCodeException;
+use App\Helpers\Helpers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\ConfirmPhoneRequest;
 use App\Http\Requests\v1\LoginRequest;
@@ -33,8 +34,7 @@ class UserController extends Controller
             $token = $user->createToken($request->getClientIp())->plainTextToken;
 
             if($user->phone_verified_at == null){
-                ConfirmSMS($user,$kavenegar);
-
+                Helpers::ConfirmSMS($user,$kavenegar);
                 return response()->json([
                     'massage' => '.در انتظار تایید شماره تلفن' ,
                     'data'=>[
@@ -62,7 +62,7 @@ class UserController extends Controller
         $validData['password'] = Hash::make($validData['password']);
         $user = User::query()->create($validData);
         $token = $user->createToken($request->getClientIp())->plainTextToken;
-        ConfirmSMS($user,$kavenegar);
+        Helpers::ConfirmSMS($user,$kavenegar);
         return response()->json([
             'massage' => '.با موفقیت ساخته شد . در انتظار تایید شماره تلفن' ,
             'data'=>[
@@ -147,7 +147,7 @@ class UserController extends Controller
     {
         $user = auth()->user()->first();
         if(!($user === null)){
-            $validData = toSnakeCase($request->all());
+            $validData = Helpers::toSnakeCase($request->all());
             if(isset($validData['password'])){
                 $validData['password'] = Hash::make($validData['password']);
             }

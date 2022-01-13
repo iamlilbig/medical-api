@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Exceptions\v1\AttendantExistsException;
 use App\Exceptions\v1\AttendantNotExistsException;
+use App\Helpers\Helpers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\AttendantsRequest;
 use App\Http\Requests\v1\SMSRequest;
@@ -25,7 +26,7 @@ class AttendantController extends Controller
     {
         $user = auth()->user();
         if($attendant = $user->attendants()->find($id) != null){
-            sendSMS($user,$attendant,$request->text,$kavenegar);
+            Helpers::sendSMS($user,$attendant,$request->text,$kavenegar);
             return response()->json([
                 'massage' => 'با موفقیت ارسال شد',
                 'status' => 200

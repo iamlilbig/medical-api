@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Exceptions\v1\MedicalInformationExistsException;
 use App\Exceptions\v1\MedicalInformationNotExistsException;
+use App\Helpers\Helpers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\MedicalInformationRequest;
 use App\Http\Resources\v1\MedicalInformation;
@@ -23,7 +24,7 @@ class MedicalInformationController extends Controller
     public function store(MedicalInformationRequest $request)
     {
         if(auth()->user()->medicalInformation()->first() === null){
-            $validData = toSnakeCase($request->all());
+            $validData = Helpers::toSnakeCase($request->all());
             $validData['user_id'] = auth()->user()->id;
             $medicalInformation = auth()->user()->medicalInformation()->create($validData);
 
@@ -64,7 +65,7 @@ class MedicalInformationController extends Controller
     public function update(MedicalInformationRequest $request)
     {
         if(!(auth()->user()->medicalInformation()->first() === null)){
-            $validData = toSnakeCase($request->all());
+            $validData = Helpers::toSnakeCase($request->all());
             auth()->user()->medicalInformation()->update($validData);
             return response()->json([
                 'massage' => 'با موفقیت به روز شد' ,
