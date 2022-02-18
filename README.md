@@ -9,3 +9,4 @@
 
 ## About Project
 
+This project is an api for medical applications<br> this will make user account and set medical information to the aacount, then user can set attendents, they can recive sms about the user helth informations
